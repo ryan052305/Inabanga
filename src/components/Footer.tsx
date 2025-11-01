@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Twitter, Youtube } from "lucide-react";
+import {   Linkedin, Twitter} from "lucide-react";
 import Link from "next/link";
 
 const Footer = () => {
@@ -71,18 +71,13 @@ const Footer = () => {
 
                     {/* Social Icons */}
                     <div className="flex space-x-5 mt-4 md:mt-0">
-                        <Link href="https://facebook.com" aria-label="Facebook" className="hover:text-white">
-                            <Facebook className="w-5 h-5" />
+                        <Link href="https://www.linkedin.com/in/allanic-dev/" aria-label="Facebook" className="hover:text-white">
+                            <Linkedin className="w-5 h-5" />
                         </Link>
-                        <Link href="https://instagram.com" aria-label="Instagram" className="hover:text-white">
-                            <Instagram className="w-5 h-5" />
-                        </Link>
-                        <Link href="https://twitter.com" aria-label="Twitter" className="hover:text-white">
+                        <Link href="https://x.com/allanic_dev" aria-label="Twitter" className="hover:text-white">
                             <Twitter className="w-5 h-5" />
                         </Link>
-                        <Link href="https://youtube.com" aria-label="YouTube" className="hover:text-white">
-                            <Youtube className="w-5 h-5" />
-                        </Link>
+
                     </div>
                 </div>
             </div>

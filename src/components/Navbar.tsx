@@ -68,6 +68,15 @@ export default function Navbar() {
           >
             Pricing
           </Link>
+          <Link
+            href="/about"
+            className={`text-md font-medium transition-all ${pathname === "/pricing"
+                ? "text-blue-600 border-b-2 border-blue-600 pb-1"
+                : "text-gray-700 hover:text-blue-600 hover:border-b-2 hover:border-blue-600 pb-1 border-transparent"
+              }`}
+          >
+            About Us
+          </Link>
         </div>
 
         {/* Auth Section (shadcn + Clerk) */}
