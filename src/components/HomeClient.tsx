@@ -77,7 +77,7 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
       if (fileType === "csv") {
         blob = await scrapeResponse.blob();
       } else {
-        const pdfResponse = await fetch("http://localhost:8000/download/pdf");
+        const pdfResponse = await fetch("https://inabanga-1.onrender.com/download/pdf");
         if (!pdfResponse.ok) throw new Error("Failed to fetch PDF file.");
         blob = await pdfResponse.blob();
       }
