@@ -5,27 +5,13 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 import {
-  SignInButton,
   UserButton,
-  SignedIn,
-  SignedOut,
   useUser,
 } from "@clerk/nextjs";
 
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
 
 import { useClerk } from "@clerk/nextjs";
 
-
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { User as UserIcon, LogOut } from "lucide-react";
 
 export default function Navbar() {
   const pathname = usePathname();

@@ -1,7 +1,20 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Users, Heart, Rocket, Target, Briefcase } from "lucide-react";
+import {  Rocket, Target } from "lucide-react";
+import { ReactNode } from "react";
+
+interface InfoCardProps {
+  icon: ReactNode;
+  title: string;
+  desc: string;
+}
+
+interface TeamCardProps {
+  name: string;
+  role: string;
+}
+
 
 export default function About() {
   return (
@@ -96,7 +109,7 @@ export default function About() {
 }
 
 /* Reusable Info Card */
-function InfoCard({ icon, title, desc }: any) {
+function InfoCard({ icon, title, desc }: InfoCardProps) {
   return (
     <motion.div
       className="flex flex-col items-center text-center p-8 bg-linear-to-br from-white/90 via-blue-50/70 to-blue-100/40 rounded-2xl border border-white/40 shadow-lg backdrop-blur-md"
@@ -112,7 +125,7 @@ function InfoCard({ icon, title, desc }: any) {
 }
 
 /* Reusable Team Member Card */
-function TeamCard({ name, role }: any) {
+function TeamCard({ name, role }: TeamCardProps) {
   return (
     <motion.div
       className="p-6 bg-linear-to-br from-white/90 via-blue-50/70 to-blue-100/50 rounded-2xl border border-white/40 shadow-md backdrop-blur-md hover:shadow-lg transition"

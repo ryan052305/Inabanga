@@ -92,11 +92,16 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
       URL.revokeObjectURL(downloadUrl);
 
       setMessage("✅ File downloaded successfully!");
-    } catch (err: any) {
-      setMessage(`❌ Error: ${err.message}`);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setMessage(`❌ Error: ${err.message}`);
+      } else {
+        setMessage("❌ An unknown error occurred.");
+      }
     } finally {
       setIsScraping(false);
     }
+
   };
 
   return (
@@ -159,8 +164,8 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
                             key={cat}
                             onClick={() => toggleCategory(cat)}
                             className={`px-4 py-2 text-sm rounded-full border transition-all ${selectedCategories.includes(cat)
-                                ? "bg-linear-to-r from-blue-600 to-indigo-600 text-white border-transparent shadow-md"
-                                : "bg-white/80 text-gray-700 border-gray-300 hover:bg-gray-100"
+                              ? "bg-linear-to-r from-blue-600 to-indigo-600 text-white border-transparent shadow-md"
+                              : "bg-white/80 text-gray-700 border-gray-300 hover:bg-gray-100"
                               }`}
                           >
                             {cat}

@@ -38,11 +38,16 @@ export async function POST(req: Request) {
         "Content-Disposition": `attachment; filename="scrape.${file_type}"`,
       },
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("❌ Backend scrape error:", err);
+
+    const message =
+      err instanceof Error ? err.message : "Scrape failed";
+
     return new Response(
-      JSON.stringify({ error: err.message || "Scrape failed" }),
+      JSON.stringify({ error: message }),
       { status: 500 }
     );
   }
+
 }

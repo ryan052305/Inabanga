@@ -3,6 +3,19 @@
 import { motion } from "framer-motion";
 import { Briefcase, Rocket, Users, Send } from "lucide-react";
 import Link from "next/link";
+import { ReactNode } from "react";
+
+interface JobCardProps {
+  role: string;
+  type: string;
+  desc: string;
+}
+
+interface BenefitCardProps {
+  icon: ReactNode;
+  title: string;
+  desc: string;
+}
 
 export default function Careers() {
   return (
@@ -110,7 +123,7 @@ export default function Careers() {
 }
 
 /* Benefit Card Component */
-function BenefitCard({ icon, title, desc }: any) {
+function BenefitCard({ icon, title, desc }: BenefitCardProps) {
   return (
     <motion.div
       className="p-6 bg-linear-to-br from-white/90 via-blue-50/70 to-blue-100/50 rounded-xl border border-white/40 shadow-md backdrop-blur-md"
@@ -126,7 +139,7 @@ function BenefitCard({ icon, title, desc }: any) {
 }
 
 /* Job Card Component */
-function JobCard({ role, type, desc }: any) {
+function JobCard({ role, type, desc }: JobCardProps) {
   return (
     <motion.div
       className="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-linear-to-br from-white/90 via-blue-50/70 to-blue-100/50 border border-white/40 rounded-xl shadow-lg backdrop-blur-md"
