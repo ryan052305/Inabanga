@@ -61,7 +61,7 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
     setMessage("⏳ Starting Amazon scrape... Please wait and do not close or refresh the tab. It may take 5-10 minutes for best and accurate results.");
 
     try {
-      const scrapeResponse = await fetch("http://localhost:8000/scrape", {
+      const scrapeResponse = await fetch("https://inabanga.com/scrape", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

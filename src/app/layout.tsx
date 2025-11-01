@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://yourwebsite.com";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://inabanga.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

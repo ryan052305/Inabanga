@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { MetadataRoute } from "next";
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://yourwebsite.com";
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://inabanga.com";
 
 const getStaticPages = (): string[] => {
   const pagesDirectory = path.join(process.cwd(), "src/app"); // make sure path is correct

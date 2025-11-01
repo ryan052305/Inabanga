@@ -14,8 +14,6 @@ export default function Navbar() {
   const pathname = usePathname();
 
 
-
-
   return (
     <nav className="w-full border-b border-gray-200 bg-white/60 backdrop-blur-md sticky top-0 z-50 shadow-sm">
       <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
