@@ -6,17 +6,13 @@ import { usePathname } from "next/navigation";
 
 import {
   UserButton,
-  useUser,
 } from "@clerk/nextjs";
 
-
-import { useClerk } from "@clerk/nextjs";
 
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { user } = useUser();
-  const clerk = useClerk();
+
 
 
 
