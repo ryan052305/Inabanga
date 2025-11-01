@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     const { categories, file_type } = body;
 
     // Call your FastAPI or scraping backend here
-    const response = await fetch("http://localhost:8000/scrape", {
+    const response = await fetch("https://inabanga-1.onrender.com/scrape", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ categories, file_type }),

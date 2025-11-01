@@ -21,6 +21,8 @@ from app.amazon_scrapper import scrape_category_detailed
 # --- FastAPI setup ---
 app = FastAPI(title="Amazon Scraper API", version="3.3")
 
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -35,18 +37,24 @@ class ScrapeRequest(BaseModel):
     categories: List[str]
     max_results: int = 350
     
+CLERK_API_KEY = os.getenv("CLERK_SECRET_KEY")  # Make sure this is in Render env
+
+    
 def verify_clerk_user(req: Request):
     auth_header = req.headers.get("Authorization")
-    if not auth_header:
-        raise HTTPException(status_code=401, detail="Missing authorization header")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid authorization header")
 
+    token = auth_header.split(" ")[1]
+
+    # Verify the token via Clerk
     resp = requests.get(
         "https://api.clerk.dev/v1/me",
-        headers={"Authorization": auth_header},
+        headers={"Authorization": f"Bearer {token}", "Authorization": f"Bearer {CLERK_API_KEY}"}
     )
 
     if resp.status_code != 200:
-        raise HTTPException(status_code=401, detail="Invalid or expired session")
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
 
     return resp.json()
 

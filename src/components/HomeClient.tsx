@@ -66,8 +66,7 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
 
     try {
       // 🧠 Get Clerk session token
-      const token = await getToken({ template: "default" });
-
+      const token = await getToken({ template: "convex" });
       const scrapeResponse = await fetch("https://inabanga-1.onrender.com/scrape", {
         method: "POST",
         headers: {
