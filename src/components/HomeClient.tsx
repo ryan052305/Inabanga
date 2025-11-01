@@ -8,9 +8,13 @@ import { Loader2, Zap } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Blog from "../components/Blog";
+import { useAuth } from "@clerk/nextjs";
+
 
 export default function HomeClient({ hasPro }: { hasPro: boolean }) {
   const router = useRouter();
+  const { getToken } = useAuth();
+
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [fileType, setFileType] = useState<"csv" | "pdf">("csv");
@@ -58,12 +62,18 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
     }
 
     setIsScraping(true);
-    setMessage("⏳ Starting Amazon scrape... Please wait and do not close or refresh the tab. It may take 5-10 minutes for best and accurate results.");
+    setMessage("⏳ Starting Amazon scrape... Please wait...");
 
     try {
+      // 🧠 Get Clerk session token
+      const token = await getToken({ template: "default" });
+
       const scrapeResponse = await fetch("https://inabanga-1.onrender.com/scrape", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`, // ✅ Add this line
+        },
         body: JSON.stringify({
           categories: selectedCategories,
           file_type: fileType,
@@ -77,7 +87,9 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
       if (fileType === "csv") {
         blob = await scrapeResponse.blob();
       } else {
-        const pdfResponse = await fetch("https://inabanga-1.onrender.com/download/pdf");
+        const pdfResponse = await fetch("https://inabanga-1.onrender.com/download/pdf", {
+          headers: { "Authorization": `Bearer ${token}` }, // ✅ Include token here too
+        });
         if (!pdfResponse.ok) throw new Error("Failed to fetch PDF file.");
         blob = await pdfResponse.blob();
       }
@@ -101,7 +113,6 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
     } finally {
       setIsScraping(false);
     }
-
   };
 
   return (
