@@ -22,7 +22,6 @@ from app.amazon_scrapper import scrape_category_detailed
 app = FastAPI(title="Amazon Scraper API", version="3.3")
 
 
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
