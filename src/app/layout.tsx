@@ -23,6 +23,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://inabanga.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+
   title: {
     default: "Inabanga – Amazon Product Scraper & Research Tool",
     template: "%s | Inabanga",
@@ -90,6 +91,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
+        <head>
+          <meta
+            name="google-adsense-account"
+            content="ca-pub-9298488339499682"
+          />
+          <script
+            async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9298488339499682"
+            crossOrigin="anonymous"
+          ></script>
+        </head>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-gray-900`}
         >
