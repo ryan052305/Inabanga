@@ -3,16 +3,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-
-import {
-  UserButton,
-} from "@clerk/nextjs";
-
-
+import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 
 export default function Navbar() {
   const pathname = usePathname();
-
 
   return (
     <nav className="w-full border-b border-gray-200 bg-white/60 backdrop-blur-md sticky top-0 z-50 shadow-sm">
@@ -32,54 +26,71 @@ export default function Navbar() {
         <div className="hidden md:flex items-center space-x-8">
           <Link
             href="/"
-            className={`text-md font-medium transition-all ${pathname === "/"
+            className={`text-md font-medium transition-all ${
+              pathname === "/"
                 ? "text-blue-600 border-b-2 border-blue-600 pb-1"
                 : "text-gray-700 hover:text-blue-600 hover:border-b-2 hover:border-blue-600 pb-1 border-transparent"
-              }`}
+            }`}
           >
             Home
           </Link>
           <Link
             href="/pricing"
-            className={`text-md font-medium transition-all ${pathname === "/pricing"
+            className={`text-md font-medium transition-all ${
+              pathname === "/pricing"
                 ? "text-blue-600 border-b-2 border-blue-600 pb-1"
                 : "text-gray-700 hover:text-blue-600 hover:border-b-2 hover:border-blue-600 pb-1 border-transparent"
-              }`}
+            }`}
           >
             Pricing
           </Link>
           <Link
             href="/about"
-            className={`text-md font-medium transition-all ${pathname === "/pricing"
+            className={`text-md font-medium transition-all ${
+              pathname === "/about"
                 ? "text-blue-600 border-b-2 border-blue-600 pb-1"
                 : "text-gray-700 hover:text-blue-600 hover:border-b-2 hover:border-blue-600 pb-1 border-transparent"
-              }`}
+            }`}
           >
             About Us
           </Link>
         </div>
 
-        {/* Auth Section (shadcn + Clerk) */}
-        <UserButton />
+        {/* Auth Section (Clerk) */}
+        <div>
+          <SignedIn>
+            <UserButton afterSignOutUrl="/" />
+          </SignedIn>
+
+          <SignedOut>
+            <SignInButton mode="modal">
+              <button className="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition">
+                Sign In
+              </button>
+            </SignInButton>
+          </SignedOut>
+        </div>
       </div>
 
       {/* Mobile Nav */}
       <div className="flex md:hidden justify-center border-t border-gray-100 bg-gray-50 py-2 space-x-6">
         <Link
           href="/"
-          className={`text-sm font-medium ${pathname === "/"
+          className={`text-sm font-medium ${
+            pathname === "/"
               ? "text-blue-600 font-semibold"
               : "text-gray-700 hover:text-blue-600"
-            }`}
+          }`}
         >
           Home
         </Link>
         <Link
           href="/pricing"
-          className={`text-sm font-medium ${pathname === "/pricing"
+          className={`text-sm font-medium ${
+            pathname === "/pricing"
               ? "text-blue-600 font-semibold"
               : "text-gray-700 hover:text-blue-600"
-            }`}
+          }`}
         >
           Pricing
         </Link>

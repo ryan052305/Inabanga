@@ -172,9 +172,9 @@ def generate_pdf_report(data, pdf_path, categories):
 
 # --- Main scrape endpoint ---
 @app.post("/scrape")
-def scrape_endpoint(req: ScrapeRequest):
-    user = verify_clerk_user(req)
-    """Scrape Amazon products and return the CSV file directly for download."""
+async def scrape_endpoint(request: Request, req: ScrapeRequest):
+    user = verify_clerk_user(request)  # ✅ use Request to get headers
+
     if not req.categories:
         raise HTTPException(status_code=400, detail="No categories provided.")
 
