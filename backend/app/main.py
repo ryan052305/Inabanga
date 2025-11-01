@@ -264,7 +264,10 @@ def download_pdf():
     )
 
 
-# --- Root endpoint ---
 @app.get("/")
 def root():
-    return {"message": "Amazon Scraper API is running!"}
+    return {"message": "Inabanga FastAPI backend is running smoothly ✅"}
+
+@app.head("/")
+def health_check():
+    return {"message": "ok"}
