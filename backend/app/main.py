@@ -13,7 +13,6 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter, landscape
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from jose import jwt, JWTError
 
 # ✅ Import your scraper
 from app.amazon_scrapper import scrape_category_detailed

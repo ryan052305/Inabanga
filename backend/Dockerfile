@@ -1,61 +1,33 @@
-# Use official Playwright image (comes with Chromium installed!)
+# ✅ Base image: Comes with Python + Playwright + Chromium preinstalled
 FROM mcr.microsoft.com/playwright/python:v1.47.0-jammy
-
-
-# Install required system libraries for Chromium/Playwright
-RUN apt-get update && apt-get install -y \
-    wget gnupg ca-certificates curl unzip \
-    libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libxkbcommon0 \
-    libxcomposite1 libxdamage1 libxrandr2 libgbm1 libasound2 \
-    && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
 
-# Copy dependencies and install them
-COPY requirements.txt .
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+# Copy only requirements first (helps with build caching)
+COPY requirements.txt ./
 
-# Install Chromium + all required dependencies
-RUN apt-get update && \
-    apt-get install -y \
-        wget \
-        curl \
-        libnss3 \
-        libx11-xcb1 \
-        libxcomposite1 \
-        libxcursor1 \
-        libxdamage1 \
-        libxi6 \
-        libxtst6 \
-        libatk1.0-0 \
-        libatk-bridge2.0-0 \
-        libcups2 \
-        libdrm2 \
-        libgbm1 \
-        libasound2 \
-        libpangocairo-1.0-0 \
-        libxrandr2 \
-        libgtk-3-0 \
-        libxshmfence1 \
-        fontconfig \
-        && rm -rf /var/lib/apt/lists/*
+# Install Python dependencies
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt
 
+# ✅ (Optional) Install extra system libraries only if your app requires them
+# Most Chromium dependencies are already installed in this base image
+RUN apt-get update && apt-get install -y \
+    wget gnupg ca-certificates curl unzip \
+    libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 \
+    libxkbcommon0 libxcomposite1 libxdamage1 libxrandr2 \
+    libgbm1 libasound2 \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install Playwright + Chromium
-RUN pip install playwright
+# ✅ Ensure browsers are installed (safe to re-run)
 RUN playwright install --with-deps chromium
 
-# Copy the rest of the project
+# Copy the rest of your backend code
 COPY . .
 
-# Make startup.sh executable
-COPY start.sh .
-RUN chmod +x /app/startup.sh
-
-# Expose FastAPI port
+# Expose FastAPI port (Render uses $PORT but we default to 8000 locally)
 EXPOSE 8000
 
-# Run the app
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "$PORT"]
+# ✅ Start FastAPI – $PORT is automatically provided by Render
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port $PORT"]
