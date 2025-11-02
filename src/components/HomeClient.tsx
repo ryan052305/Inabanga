@@ -127,6 +127,7 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
           file_type: fileType,
         }),
       });
+      console.log(token); 
 
       if (!scrapeResponse.ok) throw new Error(await scrapeResponse.text());
       setMessage("✅ Scrape complete! Preparing download...");
