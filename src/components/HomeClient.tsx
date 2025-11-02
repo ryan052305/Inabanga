@@ -9,8 +9,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Blog from "../components/Blog";
 import { useAuth, useUser } from "@clerk/nextjs";
-import { Authenticated, Unauthenticated, useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { Unauthenticated } from "convex/react";
+
 
 
 export default function HomeClient({ hasPro }: { hasPro: boolean }) {
@@ -190,9 +190,6 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
                   AI-powered Amazon product discovery and scraping tool.
                 </p>
                 {/* ✅ Convex Auth Integration */}
-                <Authenticated>
-                  <Content />
-                </Authenticated>
 
                 <Unauthenticated>
                   <p className="text-sm text-indigo-700 mb-4">Please sign in to access features.</p>
@@ -308,11 +305,4 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
 }
 
 
-function Content() {
-  const messages = useQuery(api.messages.getForCurrentUser);
-  return (
-    <div className="mt-2 text-sm text-gray-800">
-      Authenticated content: {messages ? messages.length : "Loading..."}
-    </div>
-  );
-}
+ 
