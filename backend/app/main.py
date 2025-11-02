@@ -13,6 +13,7 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter, landscape
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from playwright.sync_api import sync_playwright
 
 # ✅ Import your scraper
 from app.amazon_scrapper import scrape_category_detailed
@@ -38,6 +39,19 @@ class ScrapeRequest(BaseModel):
     
 CLERK_API_KEY = os.getenv("CLERK_SECRET_KEY")  # Make sure this is in Render env
 
+@app.get("/test-playwright")
+def test_playwright():
+    print("🚀 Starting Playwright...")
+    with sync_playwright() as p:
+        print("✅ Playwright initialized")
+        browser = p.chromium.launch(headless=True)
+        print("✅ Chromium launched")
+        page = browser.new_page()
+        print("✅ New page created")
+        page.goto("https://example.com")
+        print("✅ Page loaded:", page.title())
+        browser.close()
+    return {"status": "✅ Playwright working!"}
 
 
 # --- Helper: Clean & flatten product dict ---
