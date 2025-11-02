@@ -58,4 +58,4 @@ RUN chmod +x /app/startup.sh
 EXPOSE 8000
 
 # Run the app
-CMD ["./startup.sh"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "$PORT"]
