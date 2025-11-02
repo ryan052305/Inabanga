@@ -1,0 +1,16 @@
+# Ignore virtual environment & caches
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore OS & editor junk
+.DS_Store
+*.log
+
+# Ignore environment variables
+.env
+.env.*
+
+# Optional large folders
+output/
