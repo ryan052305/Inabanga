@@ -22,14 +22,13 @@ const geistMono = Geist_Mono({
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://inabanga.com";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-
+  metadataBase: new URL(siteUrl || "https://inabanga.com/"),
+  icons : {
+    icon: "/favicon.ico",
+  }
   title: {
     default: "Inabanga – Amazon Product Scraper & Research Tool",
     template: "%s | Inabanga",
-  },
-  icons: {
-    icon: "/favicon.ico",
   },
   description:
     "Inabanga helps Amazon sellers automate product research, track trends, and stay ahead of competitors using AI-powered scraping and analytics.",
