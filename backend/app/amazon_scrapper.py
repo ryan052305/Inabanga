@@ -183,12 +183,72 @@ def scrape_category_detailed(category_name, max_results=100):
     try:
         with sync_playwright() as p:
             print("✅ Playwright OK")
-            browser = p.chromium.launch(headless=True)
+
+            browser = p.chromium.launch(
+                headless=True,
+                args=[
+                    "--disable-blink-features=AutomationControlled",
+                    "--no-sandbox",
+                    "--disable-setuid-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--disable-gpu",
+                    "--disable-infobars",
+                    "--window-size=1920,1080",
+                ]
+            )
             print("✅ Chromium launched successfully")
+
+            context = browser.new_context(
+                user_agent=(
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/120.0.0.0 Safari/537.36"
+                ),
+                viewport={"width": 1920, "height": 1080},
+                locale="en-US"
+            )
+
+            context.set_extra_http_headers({
+                "accept-language": "en-US,en;q=0.9",
+                "accept-encoding": "gzip, deflate, br",
+            })
+
+            page = context.new_page()
+            print(f"➡ Loading page 1: {category_url}")
+
+            # Try multiple times to avoid 404/CAPTCHA
+            for attempt in range(3):
+                try:
+                    page.goto(category_url, wait_until="domcontentloaded", timeout=30000)
+                    time.sleep(3)
+                    content = page.content()
+                    if "captcha" not in content.lower() and "robot" not in content.lower():
+                        print("✅ Page loaded successfully")
+                        break
+                    else:
+                        print("⚠️ CAPTCHA detected, retrying...")
+                except Exception as e:
+                    print(f"⚠️ Attempt {attempt+1} failed: {e}")
+                    time.sleep(2)
+            else:
+                print("❌ Failed to bypass CAPTCHA or load valid page after retries.")
+                page.screenshot(path="amazon_error.png", full_page=True)
+                browser.close()
+                return []
+
+            # Example scraping logic placeholder
+            products = page.locator("div.p13n-sc-uncoverable-faceout")
+            count = products.count()
+            print(f"✅ Found {count} product elements on the page.")
+
             browser.close()
+            return [f"Product {i+1}" for i in range(min(count, max_results))]
+
     except Exception as e:
         print("❌ Playwright or Chromium failed:", e)
         return []
+    
+    
     # ensure we attempt at least 100 when user didn't supply more
     max_results = max(max_results or 0, 350)
 
