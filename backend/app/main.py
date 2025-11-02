@@ -24,6 +24,7 @@ app = FastAPI(title="Amazon Scraper API", version="3.3")
 
 CLERK_JWKS_URL = "https://clerk.inabanga.com/.well-known/jwks.json"
 CLERK_AUDIENCE = "https://inabanga-1.onrender.com"
+CLERK_ISSUER = "https://clerk.inabanga.com"
 
 
 app.add_middleware(
@@ -53,28 +54,25 @@ def get_jwks():
 
 def verify_clerk_token(token: str):
     try:
-        jwks = get_jwks()
-        unverified_header = jwt.get_unverified_header(token)
+        # Fetch Clerk's JWKS keys
+        jwks = requests.get(CLERK_JWKS_URL).json()
+        header = jwt.get_unverified_header(token)
+        key = next(k for k in jwks["keys"] if k["kid"] == header["kid"])
 
-        key = next((k for k in jwks["keys"] if k["kid"] == unverified_header["kid"]), None)
-        if not key:
-            raise HTTPException(status_code=401, detail="Invalid token header: key not found")
+        public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key)
 
-        # Decode and verify token
-        payload = jwt.decode(
+        decoded = jwt.decode(
             token,
-            jwt.algorithms.RSAAlgorithm.from_jwk(key),
+            public_key,
             algorithms=["RS256"],
-            audience=CLERK_AUDIENCE,  # ✅ Your Clerk JWT template audience
-            options={"verify_exp": True}
+            audience=CLERK_AUDIENCE,
+            issuer=CLERK_ISSUER
         )
+        return decoded
 
-        return payload
-
-    except JWTError as e:
-        raise HTTPException(status_code=401, detail=f"Invalid or expired token: {str(e)}")
     except Exception as e:
-        raise HTTPException(status_code=401, detail=f"Token verification failed: {str(e)}")
+        print("❌ JWT verification failed:", str(e))
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
 
 
 
