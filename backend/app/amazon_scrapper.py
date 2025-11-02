@@ -175,6 +175,20 @@ def scrape_category_detailed(category_name, max_results=100):
     Returns products in unified format.
     Ensures at least 100 items attempted (unless max_results < 100).
     """
+    
+    print("🛠 Checking Playwright installation...")
+
+    from playwright.sync_api import sync_playwright
+    
+    try:
+        with sync_playwright() as p:
+            print("✅ Playwright OK")
+            browser = p.chromium.launch(headless=True)
+            print("✅ Chromium launched successfully")
+            browser.close()
+    except Exception as e:
+        print("❌ Playwright or Chromium failed:", e)
+        return []
     # ensure we attempt at least 100 when user didn't supply more
     max_results = max(max_results or 0, 350)
 

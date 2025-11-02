@@ -1,32 +1,38 @@
-# ✅ Base image: Comes with Python + Playwright + Chromium preinstalled
+# ✅ Use official Playwright base image (Chromium already included)
 FROM mcr.microsoft.com/playwright/python:v1.47.0-jammy
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
 
 # Set working directory
 WORKDIR /app
 
-# Copy only requirements first (helps with build caching)
-COPY requirements.txt ./
-
-# Install Python dependencies
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
-
-# ✅ (Optional) Install extra system libraries only if your app requires them
-# Most Chromium dependencies are already installed in this base image
+# Install system dependencies for Playwright
 RUN apt-get update && apt-get install -y \
-    wget gnupg ca-certificates curl unzip \
-    libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 \
-    libxkbcommon0 libxcomposite1 libxdamage1 libxrandr2 \
-    libgbm1 libasound2 \
-    && rm -rf /var/lib/apt/lists/*
+    wget unzip libssl-dev libx11-6 libxcomposite1 libxcursor1 libxdamage1 \
+    libxrandr2 libasound2 libatk1.0-0 libatk-bridge2.0-0 libcups2 \
+    libdbus-1-3 libdrm2 libgbm1 libgtk-3-0 libnspr4 libnss3 libxfixes3 \
+    libxkbcommon0 libxshmfence1 libglu1-mesa && \
+    rm -rf /var/lib/apt/lists/*
 
-# ✅ Ensure browsers are installed (safe to re-run)
+    
+
+# Copy dependencies first for caching
+COPY requirements.txt .
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+# or:
+# RUN python -m playwright install --with-deps chromium
+
+# ✅ Ensure Playwright and Chromium are installed
 RUN playwright install --with-deps chromium
 
-# Copy the rest of your backend code
+# Copy the rest of the application
 COPY . .
 
-# Expose FastAPI port (Render uses $PORT but we default to 8000 locally)
+# Expose FastAPI default port
 EXPOSE 8000
 
 # ✅ Start FastAPI – $PORT is automatically provided by Render

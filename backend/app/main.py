@@ -14,6 +14,7 @@ from reportlab.lib.pagesizes import letter, landscape
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from playwright.sync_api import sync_playwright
+import threading
 
 # ✅ Import your scraper
 from app.amazon_scrapper import scrape_category_detailed
@@ -39,19 +40,26 @@ class ScrapeRequest(BaseModel):
     
 CLERK_API_KEY = os.getenv("CLERK_SECRET_KEY")  # Make sure this is in Render env
 
-@app.get("/test-playwright")
 def test_playwright():
-    print("🚀 Starting Playwright...")
-    with sync_playwright() as p:
-        print("✅ Playwright initialized")
-        browser = p.chromium.launch(headless=True)
-        print("✅ Chromium launched")
-        page = browser.new_page()
-        print("✅ New page created")
-        page.goto("https://example.com")
-        print("✅ Page loaded:", page.title())
-        browser.close()
-    return {"status": "✅ Playwright working!"}
+    print("🚀 Starting Playwright test on startup...")
+    try:
+        with sync_playwright() as p:
+            print("✅ Playwright initialized")
+            browser = p.chromium.launch(headless=True)
+            print("✅ Chromium launched")
+            page = browser.new_page()
+            page.goto("https://example.com")
+            print("✅ Page loaded:", page.title())
+            browser.close()
+    except Exception as e:
+        print("❌ Playwright error:", e)
+
+
+@app.on_event("startup")
+def startup_event():
+    # Run the Playwright test in a separate thread (so it doesn’t block FastAPI)
+    thread = threading.Thread(target=test_playwright)
+    thread.start()
 
 
 # --- Helper: Clean & flatten product dict ---
