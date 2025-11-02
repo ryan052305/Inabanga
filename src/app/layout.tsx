@@ -34,6 +34,10 @@ export const metadata: Metadata = {
   description:
     "Inabanga helps Amazon sellers automate product research, track trends, and stay ahead of competitors using AI-powered scraping and analytics.",
   keywords: [
+    "amazon best sellers",
+    "trending products on amazon",
+    "amazon product research tool",
+    "amazon top selling products",
     "amazon scraper",
     "amazon product scraper",
     "amazon product research",
@@ -51,6 +55,7 @@ export const metadata: Metadata = {
     "FBA research",
     "Amazon seller tools",
     "Inabanga",
+
   ],
   authors: [{ name: "Inabanga Team", url: siteUrl }],
   creator: "Inabanga",
