@@ -191,12 +191,11 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
                 </p>
                 {/* ✅ Convex Auth Integration */}
                 <Authenticated>
-                  <p className="text-sm text-green-600 mb-4">You are signed in!</p>
                   <Content />
                 </Authenticated>
 
                 <Unauthenticated>
-                  <p className="text-sm text-red-600 mb-4">Please sign in to access features.</p>
+                  <p className="text-sm text-indigo-700 mb-4">Please sign in to access features.</p>
                 </Unauthenticated>
                 <Button
                   size="lg"
