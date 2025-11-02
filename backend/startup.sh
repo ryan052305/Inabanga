@@ -1,15 +1,17 @@
 #!/bin/bash
 
-echo "🚀 Starting deployment setup..."
+echo "🚀 Starting setup..."
 
-# Install Playwright browsers only if not installed
-if [ ! -d "/root/.cache/ms-playwright" ]; then
-  echo "📥 Installing Playwright browsers and dependencies..."
-  playwright install --with-deps chromium
+# Ensure Playwright dependencies & Chromium are installed
+if [ ! -d "/opt/render/.cache/ms-playwright" ]; then
+  echo "📥 Installing Playwright Chromium with dependencies..."
+  npx playwright install --with-deps chromium
 else
-  echo "✅ Playwright is already installed. Skipping..."
+  echo "✅ Playwright Chromium already installed."
 fi
 
-# Start FastAPI server
+# Export Playwright cache path to avoid errors
+export PLAYWRIGHT_BROWSERS_PATH=/opt/render/.cache/ms-playwright
+
 echo "✅ Launching FastAPI server..."
 uvicorn app.main:app --host 0.0.0.0 --port $PORT
