@@ -13,14 +13,13 @@ export async function POST(req: Request) {
     }
 
 
-    // 🔍 Check user roles (assuming stored in publicMetadata)
-    const isAdmin = user.publicMetadata?.role === "admin";
-
-    // 🔒 Check if user has the Pro plan
+    // ✅ Get metadata
+    const role = user.publicMetadata?.role;
     const hasPro = has({ plan: "pro" });
 
-    // ✅ Allow admins OR Pro users only
-    if (!isAdmin && !hasPro) {
+    // ✅ Allow if user has Pro plan OR is an admin
+    const isAllowed = role === "admin" || hasPro;
+    if (!isAllowed) {
       return new Response(JSON.stringify({ error: "Upgrade to Pro" }), {
         status: 403,
         headers: { "Content-Type": "application/json" },
