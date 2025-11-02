@@ -9,6 +9,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Blog from "../components/Blog";
 import { useAuth, useUser } from "@clerk/nextjs";
+import { Authenticated, Unauthenticated, useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 
 export default function HomeClient({ hasPro }: { hasPro: boolean }) {
@@ -186,6 +188,15 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
                   <span className="font-semibold text-gray-900">Inabanga</span> — your
                   AI-powered Amazon product discovery and scraping tool.
                 </p>
+                {/* ✅ Convex Auth Integration */}
+                <Authenticated>
+                  <p className="text-sm text-green-600 mb-4">You are signed in!</p>
+                  <Content />
+                </Authenticated>
+
+                <Unauthenticated>
+                  <p className="text-sm text-red-600 mb-4">Please sign in to access features.</p>
+                </Unauthenticated>
                 <Button
                   size="lg"
                   className="bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-8 py-6 rounded-full shadow-lg transition-all"
@@ -297,3 +308,11 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
 }
 
 
+function Content() {
+  const messages = useQuery(api.messages.getForCurrentUser);
+  return (
+    <div className="mt-2 text-sm text-gray-800">
+      Authenticated content: {messages ? messages.length : "Loading..."}
+    </div>
+  );
+}
