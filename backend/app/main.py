@@ -22,10 +22,6 @@ from app.amazon_scrapper import scrape_category_detailed
 # --- FastAPI setup ---
 app = FastAPI(title="Amazon Scraper API", version="3.3")
 
-CLERK_JWKS_URL = "https://clerk.inabanga.com/.well-known/jwks.json"
-CLERK_AUDIENCE = "https://inabanga-1.onrender.com"
-CLERK_ISSUER = "https://clerk.inabanga.com"
-
 
 app.add_middleware(
     CORSMiddleware,
@@ -42,39 +38,26 @@ class ScrapeRequest(BaseModel):
     max_results: int = 350
     
 CLERK_API_KEY = os.getenv("CLERK_SECRET_KEY")  # Make sure this is in Render env
-
-def get_jwks():
-    global _cached_jwks
-    if _cached_jwks is None:
-        response = requests.get(CLERK_JWKS_URL)
-        response.raise_for_status()
-        _cached_jwks = response.json()
-    return _cached_jwks
+CLERK_JWKS_URL = "https://clerk.inabanga.com/.well-known/jwks.json"
+CLERK_AUDIENCE = "https://inabanga-1.onrender.com"
 
 
 def verify_clerk_token(token: str):
+    jwks = requests.get(CLERK_JWKS_URL).json()
     try:
-        # Fetch Clerk's JWKS keys
-        jwks = requests.get(CLERK_JWKS_URL).json()
         header = jwt.get_unverified_header(token)
         key = next(k for k in jwks["keys"] if k["kid"] == header["kid"])
-
         public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key)
-
         decoded = jwt.decode(
             token,
             public_key,
             algorithms=["RS256"],
-            audience=CLERK_AUDIENCE,
-            issuer=CLERK_ISSUER
+            audience=CLERK_AUDIENCE
         )
         return decoded
-
     except Exception as e:
-        print("❌ JWT verification failed:", str(e))
+        print("JWT verification failed:", e)
         raise HTTPException(status_code=401, detail="Invalid or expired token")
-
-
 
 def verify_clerk_user(req: Request):
     auth_header = req.headers.get("Authorization")
@@ -82,17 +65,8 @@ def verify_clerk_user(req: Request):
         raise HTTPException(status_code=401, detail="Missing or invalid authorization header")
 
     token = auth_header.split(" ")[1]
+    return verify_clerk_token(token)
 
-    # Verify the token via Clerk
-    resp = requests.get(
-        "https://api.clerk.dev/v1/me",
-        headers={"Authorization": f"Bearer {token}", "Authorization": f"Bearer {CLERK_API_KEY}"}
-    )
-
-    if resp.status_code != 200:
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
-
-    return resp.json()
 
 
 
