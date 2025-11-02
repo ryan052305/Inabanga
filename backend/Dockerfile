@@ -1,5 +1,6 @@
-# Use lightweight Python image
-FROM python:3.10-slim
+# Use official Playwright image (comes with Chromium installed!)
+FROM mcr.microsoft.com/playwright/python:v1.47.0-jammy
+
 
 # Install required system libraries for Chromium/Playwright
 RUN apt-get update && apt-get install -y \
