@@ -8,12 +8,14 @@ import { Loader2, Zap } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Blog from "../components/Blog";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 
 
 export default function HomeClient({ hasPro }: { hasPro: boolean }) {
   const router = useRouter();
   const { getToken } = useAuth();
+  const { user } = useUser();
+
 
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -32,6 +34,38 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
     "Tech Gadgets",
     "Home Accessories",
   ];
+
+  useEffect(() => {
+    const assignAdminRole = async () => {
+      if (!user) return;
+
+      const adminUserId = "user_34sTLJLDqC5ZBrrbprUNGBG4WLg";
+
+      if (user.id === adminUserId && user.publicMetadata.role !== "admin") {
+        try {
+          const token = await getToken({ template: "convex" });
+          await fetch("/api/set-admin-role", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              userId: user.id,
+              role: "admin",
+              plan: "pro",
+            }),
+          });
+          console.log("✅ Admin role set!");
+        } catch (error) {
+          console.error("❌ Failed to set admin role:", error);
+        }
+      }
+    };
+
+    assignAdminRole();
+  }, [user, getToken]);
+
 
   useEffect(() => {
     const last = localStorage.getItem("lastScrape");
@@ -199,14 +233,24 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
 
                     {/* Button Gating */}
                     <Button
-                      onClick={hasPro ? handleScrape : () => router.push("/pricing")}
+                      onClick={() => {
+                        const isAdmin = user?.publicMetadata?.role === "admin";
+                        const isPro = hasPro || user?.publicMetadata?.plan === "pro";
+
+                        if (isAdmin || isPro) {
+                          handleScrape();
+                        } else {
+                          router.push("/pricing");
+                        }
+                      }}
                       disabled={isScraping}
                       className="w-full bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 rounded-xl transition flex items-center justify-center gap-2"
                     >
                       {isScraping ? (
                         <>
-                          <Loader2 className="w-4 h-4 animate-spin" /> Scraping...                         </>
-                      ) : hasPro ? (
+                          <Loader2 className="w-4 h-4 animate-spin" /> Scraping...
+                        </>
+                      ) : user?.publicMetadata?.role === "admin" || hasPro || user?.publicMetadata?.plan === "pro" ? (
                         <>
                           <Zap className="w-4 h-4" /> Start Scraping
                         </>
@@ -216,6 +260,7 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
                         </span>
                       )}
                     </Button>
+
 
                     {message && (
                       <p className="mt-4 text-center text-sm text-gray-600">{message}</p>
