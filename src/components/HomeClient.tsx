@@ -39,12 +39,14 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
     const assignAdminRole = async () => {
       if (!user) return;
 
-      const adminUserId = "user_34sTLJLDqC5ZBrrbprUNGBG4WLg";
+      const adminUserId = "user_34sTLJLDqC5ZBrrbprUNGBG4WLg"; // Replace with actual admin user ID
 
+      // only run if you're the admin and not already marked as admin
       if (user.id === adminUserId && user.publicMetadata.role !== "admin") {
         try {
-          const token = await getToken({ template: "convex" });
-          await fetch("/api/set-admin-role", {
+          const token = await getToken();
+
+          const res = await fetch("/api/set-admin-role", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -56,7 +58,9 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
               plan: "pro",
             }),
           });
-          console.log("✅ Admin role set!");
+
+          if (!res.ok) throw new Error(await res.text());
+          console.log("✅ Admin role successfully set!");
         } catch (error) {
           console.error("❌ Failed to set admin role:", error);
         }
