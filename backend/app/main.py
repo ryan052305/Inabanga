@@ -38,35 +38,6 @@ class ScrapeRequest(BaseModel):
     max_results: int = 350
     
 CLERK_API_KEY = os.getenv("CLERK_SECRET_KEY")  # Make sure this is in Render env
-CLERK_JWKS_URL = "https://clerk.inabanga.com/.well-known/jwks.json"
-CLERK_AUDIENCE = "https://inabanga-1.onrender.com"
-
-
-def verify_clerk_token(token: str):
-    jwks = requests.get(CLERK_JWKS_URL).json()
-    try:
-        header = jwt.get_unverified_header(token)
-        key = next(k for k in jwks["keys"] if k["kid"] == header["kid"])
-        public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key)
-        decoded = jwt.decode(
-            token,
-            public_key,
-            algorithms=["RS256"],
-            audience=CLERK_AUDIENCE
-        )
-        return decoded
-    except Exception as e:
-        print("JWT verification failed:", e)
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
-
-def verify_clerk_user(req: Request):
-    auth_header = req.headers.get("Authorization")
-    if not auth_header or not auth_header.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Missing or invalid authorization header")
-
-    token = auth_header.split(" ")[1]
-    return verify_clerk_token(token)
-
 
 
 
@@ -191,7 +162,6 @@ def generate_pdf_report(data, pdf_path, categories):
 # --- Main scrape endpoint ---
 @app.post("/scrape")
 async def scrape_endpoint(request: Request, req: ScrapeRequest):
-    user = verify_clerk_user(request)  # ✅ use Request to get headers
 
     if not req.categories:
         raise HTTPException(status_code=400, detail="No categories provided.")
