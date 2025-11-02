@@ -53,7 +53,7 @@ export const metadata: Metadata = {
       "AI-powered Amazon product scraper for sellers. Track competitors, discover trends, and make data-driven decisions.",
     images: [
       {
-        url: "/logo.png", // Make sure this exists in /public
+        url: "/favicon.ico", // Make sure this exists in /public
         width: 1200,
         height: 630,
         alt: "Inabanga – Amazon Seller Toolkit",
