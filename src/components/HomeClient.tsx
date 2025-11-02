@@ -35,10 +35,10 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
   ];
 
   useEffect(() => {
-  if (isLoaded && user) {
-    console.log("User metadata:", user.publicMetadata);
-  }
-}, [isLoaded, user]);
+    if (isLoaded && user) {
+      console.log("User metadata:", user.publicMetadata);
+    }
+  }, [isLoaded, user]);
 
   useEffect(() => {
     const assignAdminRole = async () => {
@@ -240,12 +240,15 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
                       </select>
                     </div>
 
-                    {/* Button Gating */}
+                    {/* ✅ Scrape Button with Role/Plan Gating */}
                     <Button
                       onClick={() => {
-                        const isAdmin = user?.publicMetadata?.role === "admin";
-                        const isPro = hasPro || user?.publicMetadata?.plan === "pro";
+                        const role = user?.publicMetadata?.role;
+                        const plan = user?.publicMetadata?.plan;
+                        const isAdmin = role === "admin";
+                        const isPro = hasPro || plan === "pro";
 
+                        // ✅ Allow scraping for admins or Pro users
                         if (isAdmin || isPro) {
                           handleScrape();
                         } else {
@@ -259,17 +262,17 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
                         <>
                           <Loader2 className="w-4 h-4 animate-spin" /> Scraping...
                         </>
-                      ) : user?.publicMetadata?.role === "admin" || hasPro || user?.publicMetadata?.plan === "pro" ? (
-                        <>
-                          <Zap className="w-4 h-4" /> Start Scraping
-                        </>
                       ) : (
-                        <span className="flex items-center gap-2">
-                          <Zap className="w-4 h-4" /> Upgrade to Pro
-                        </span>
+                        <>
+                          <Zap className="w-4 h-4" />
+                          {user?.publicMetadata?.role === "admin"
+                            ? "Start Scraping (Admin)"
+                            : hasPro || user?.publicMetadata?.plan === "pro"
+                              ? "Start Scraping"
+                              : "Upgrade to Pro"}
+                        </>
                       )}
                     </Button>
-
 
                     {message && (
                       <p className="mt-4 text-center text-sm text-gray-600">{message}</p>
