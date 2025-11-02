@@ -295,3 +295,5 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
     </main>
   );
 }
+
+
