@@ -13,7 +13,7 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter, landscape
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-import jwt
+from jose import jwt, JWTError
 
 # ✅ Import your scraper
 from app.amazon_scrapper import scrape_category_detailed
@@ -23,6 +23,7 @@ from app.amazon_scrapper import scrape_category_detailed
 app = FastAPI(title="Amazon Scraper API", version="3.3")
 
 CLERK_JWKS_URL = "https://clerk.inabanga.com/.well-known/jwks.json"
+CLERK_AUDIENCE = "https://inabanga-1.onrender.com"
 
 
 app.add_middleware(
@@ -41,16 +42,40 @@ class ScrapeRequest(BaseModel):
     
 CLERK_API_KEY = os.getenv("CLERK_SECRET_KEY")  # Make sure this is in Render env
 
+def get_jwks():
+    global _cached_jwks
+    if _cached_jwks is None:
+        response = requests.get(CLERK_JWKS_URL)
+        response.raise_for_status()
+        _cached_jwks = response.json()
+    return _cached_jwks
+
+
 def verify_clerk_token(token: str):
-    jwks = requests.get(CLERK_JWKS_URL).json()
     try:
-        header = jwt.get_unverified_header(token)
-        key = next(k for k in jwks["keys"] if k["kid"] == header["kid"])
-        public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key)
-        decoded = jwt.decode(token, public_key, algorithms=["RS256"], audience="https://inabanga-1.onrender.com")
-        return decoded
-    except Exception:
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
+        jwks = get_jwks()
+        unverified_header = jwt.get_unverified_header(token)
+
+        key = next((k for k in jwks["keys"] if k["kid"] == unverified_header["kid"]), None)
+        if not key:
+            raise HTTPException(status_code=401, detail="Invalid token header: key not found")
+
+        # Decode and verify token
+        payload = jwt.decode(
+            token,
+            jwt.algorithms.RSAAlgorithm.from_jwk(key),
+            algorithms=["RS256"],
+            audience=CLERK_AUDIENCE,  # ✅ Your Clerk JWT template audience
+            options={"verify_exp": True}
+        )
+
+        return payload
+
+    except JWTError as e:
+        raise HTTPException(status_code=401, detail=f"Invalid or expired token: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Token verification failed: {str(e)}")
+
 
 
 def verify_clerk_user(req: Request):
