@@ -1,10 +1,10 @@
+import asyncio
 from fastapi import FastAPI, HTTPException, Request
 import requests
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import List
-import asyncio
 import os
 import json
 import pandas as pd
@@ -176,8 +176,11 @@ async def scrape_endpoint(request: Request, req: ScrapeRequest):
     try:
         for category in req.categories:
             print(f"🔍 Scraping category: {category}")
-            results = scrape_category_detailed(category_name=category, max_results=per_category)
+            results = await asyncio.to_thread(
+                scrape_category_detailed, category, per_category
+            )
             all_results.extend(results)
+
 
         if not all_results:
             raise HTTPException(status_code=404, detail="No results found.")
