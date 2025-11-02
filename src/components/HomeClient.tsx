@@ -94,7 +94,11 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
   };
 
   const handleScrape = async () => {
-    if (!hasPro) {
+
+    const isAdmin = user?.publicMetadata?.role === "admin";
+    const isPro = hasPro || user?.publicMetadata?.plan === "pro";
+
+    if (!isPro && !isAdmin) {
       router.push("/pricing");
       return;
     }
@@ -109,7 +113,7 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
 
     try {
       // 🧠 Get Clerk session token
-      const token = await getToken({ template: "convex" });
+      const token = await getToken({ template: "backend" });
       const scrapeResponse = await fetch("https://inabanga-1.onrender.com/scrape", {
         method: "POST",
         headers: {

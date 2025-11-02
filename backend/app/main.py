@@ -13,6 +13,7 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter, landscape
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+import jwt
 
 # ✅ Import your scraper
 from app.amazon_scrapper import scrape_category_detailed
@@ -20,6 +21,8 @@ from app.amazon_scrapper import scrape_category_detailed
 
 # --- FastAPI setup ---
 app = FastAPI(title="Amazon Scraper API", version="3.3")
+
+CLERK_JWKS_URL = "https://clerk.inabanga.com/.well-known/jwks.json"
 
 
 app.add_middleware(
@@ -38,7 +41,18 @@ class ScrapeRequest(BaseModel):
     
 CLERK_API_KEY = os.getenv("CLERK_SECRET_KEY")  # Make sure this is in Render env
 
-    
+def verify_clerk_token(token: str):
+    jwks = requests.get(CLERK_JWKS_URL).json()
+    try:
+        header = jwt.get_unverified_header(token)
+        key = next(k for k in jwks["keys"] if k["kid"] == header["kid"])
+        public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key)
+        decoded = jwt.decode(token, public_key, algorithms=["RS256"], audience="https://inabanga-1.onrender.com")
+        return decoded
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+
 def verify_clerk_user(req: Request):
     auth_header = req.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
