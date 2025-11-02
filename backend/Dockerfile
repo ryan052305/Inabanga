@@ -17,12 +17,14 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 # Install Playwright + Chromium
-RUN playwright install --with-deps chromium
+RUN pip install playwright
+RUN playwright install --with-deps
 
 # Copy the rest of the project
 COPY . .
 
 # Make startup.sh executable
+COPY start.sh .
 RUN chmod +x /app/startup.sh
 
 # Expose FastAPI port
