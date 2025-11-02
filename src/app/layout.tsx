@@ -23,9 +23,9 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://inabanga.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl || "https://inabanga.com/"),
-  icons : {
+  icons: {
     icon: "/favicon.ico",
-  }
+  },
   title: {
     default: "Inabanga – Amazon Product Scraper & Research Tool",
     template: "%s | Inabanga",
@@ -33,6 +33,20 @@ export const metadata: Metadata = {
   description:
     "Inabanga helps Amazon sellers automate product research, track trends, and stay ahead of competitors using AI-powered scraping and analytics.",
   keywords: [
+    "shopify",
+    "shopify dropshipping",
+    "shopify products",
+    "shopify product research",
+    "shopify product scraper",
+    "shopify trending products",
+    "shopify best sellers",
+    "shopify analytics",
+    "shopify seller tools",
+    "ecommerce",
+    "ecommerce dropshipping",
+    "dropshipping",
+    "amazon dropshipping",
+    "best products to sell on amazon",
     "amazon best sellers",
     "trending products on amazon",
     "amazon product research tool",
@@ -104,6 +118,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <head>
+          <meta name="keywords" content="shopify, shopify product research, amazon product research, dropshipping tools, ecommerce analytics, Inabanga" />
+          <meta name="description" content="Discover trending products, track Amazon FBA sales, and analyze Shopify best sellers with Inabanga — your AI-powered ecommerce research assistant." />
           <meta
             name="google-adsense-account"
             content="ca-pub-9298488339499682"
