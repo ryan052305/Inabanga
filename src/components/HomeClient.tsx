@@ -14,14 +14,13 @@ import { useAuth, useUser } from "@clerk/nextjs";
 export default function HomeClient({ hasPro }: { hasPro: boolean }) {
   const router = useRouter();
   const { getToken } = useAuth();
-  const { user } = useUser();
-
-
+  const { user, isLoaded } = useUser();
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [fileType, setFileType] = useState<"csv" | "pdf">("csv");
   const [isScraping, setIsScraping] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+
 
   const categories = [
     "Women Fashion",
@@ -34,6 +33,12 @@ export default function HomeClient({ hasPro }: { hasPro: boolean }) {
     "Tech Gadgets",
     "Home Accessories",
   ];
+
+  useEffect(() => {
+  if (isLoaded && user) {
+    console.log("User metadata:", user.publicMetadata);
+  }
+}, [isLoaded, user]);
 
   useEffect(() => {
     const assignAdminRole = async () => {
